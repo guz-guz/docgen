@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\dguzyk\.Rider2019.1\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\dguzyk\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\dguzyk\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_DocGen.945199720.00" t="ExcludeRecursive" />
+    <e p="D:\DEV\LE\DocGen\DocGen" t="IncludeFlat">
+      <e p="DocGen.ConsoleProject" t="IncludeRecursive">
+        <e p="BaseInterpreter.cs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Constants.cs" t="Include" />
+        <e p="DocGen.ConsoleProject.csproj" t="IncludeRecursive" />
+        <e p="InPlaceInterpreter.cs" t="Include" />
+        <e p="InterpreterContext.cs" t="Include" />
+        <e p="IRendererVisitor.cs" t="Include" />
+        <e p="ITemplateVisitor.cs" t="Include" />
+        <e p="migradoc-generated.pdf" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.2" t="Include">
+              <e p="DocGen.ConsoleProject.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="PdfRendererVisitor.cs" t="Include" />
+        <e p="Program.cs" t="Include" />
+        <e p="report.pdf" t="Include" />
+        <e p="Template.docx" t="Include" />
+        <e p="ValueProvider.cs" t="Include" />
+      </e>
+      <e p="DocGen.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

@@ -1,0 +1,11 @@
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\bin\Debug\netcoreapp2.2\DocGen.ConsoleProject.deps.json
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\bin\Debug\netcoreapp2.2\DocGen.ConsoleProject.runtimeconfig.json
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\bin\Debug\netcoreapp2.2\DocGen.ConsoleProject.runtimeconfig.dev.json
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\bin\Debug\netcoreapp2.2\DocGen.ConsoleProject.dll
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\bin\Debug\netcoreapp2.2\DocGen.ConsoleProject.pdb
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.csprojAssemblyReference.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.csproj.CoreCompileInputs.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.AssemblyInfoInputs.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.AssemblyInfo.cs
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.dll
+D:\DEV\LE\DocGen\DocGen\DocGen.ConsoleProject\obj\Debug\netcoreapp2.2\DocGen.ConsoleProject.pdb

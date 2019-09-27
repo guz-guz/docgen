@@ -1,0 +1,4 @@
+D:\DEV\LE\DocGen\DocGen\DocGen.Console\obj\Debug\netcoreapp2.2\DocGen.Console.csprojAssemblyReference.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.Console\obj\Debug\netcoreapp2.2\DocGen.Console.csproj.CoreCompileInputs.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.Console\obj\Debug\netcoreapp2.2\DocGen.Console.AssemblyInfoInputs.cache
+D:\DEV\LE\DocGen\DocGen\DocGen.Console\obj\Debug\netcoreapp2.2\DocGen.Console.AssemblyInfo.cs
