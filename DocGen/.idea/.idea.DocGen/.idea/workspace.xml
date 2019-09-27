@@ -29,8 +29,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DocGen.ConsoleProject/PdfRendererVisitor.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="464">
-              <caret line="98" column="60" selection-start-line="98" selection-start-column="60" selection-end-line="98" selection-end-column="60" />
+            <state relative-caret-position="80">
+              <caret line="83" column="28" lean-forward="true" selection-start-line="83" selection-start-column="28" selection-end-line="83" selection-end-column="28" />
               <folding>
                 <marker date="1569602081521" expanded="true" signature="6:714" ph="..." />
                 <marker date="1569602081521" expanded="true" signature="730:4320" ph="{...}" />
@@ -177,6 +177,9 @@
       <replace>double</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4156DEFD-3D50-4A5F-A099-C2B49343A450/bc/f1d7fde9/Dictionary`2.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4156DEFD-3D50-4A5F-A099-C2B49343A450/13/df66465c/IEnumerable`1.cs" root0="SKIP_HIGHLIGHTING" />
@@ -260,6 +263,7 @@
     <option name="width" value="1934" />
     <option name="height" value="1048" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="SolutionExplorer" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -276,8 +280,7 @@
             </path>
             <path>
               <item name="" type="784c90a0:SolutionExplorerRootNode" />
-              <item name="DocGen" type="24d0babc:SolutionExplorerModelNode" />
-              <item name="DocGen.ConsoleProject" type="24d0babc:SolutionExplorerModelNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
             </path>
           </expand>
           <select />
@@ -338,12 +341,12 @@
       <updated>1569489801012</updated>
       <workItem from="1569489802854" duration="8348000" />
       <workItem from="1569505958099" duration="6114000" />
-      <workItem from="1569574937287" duration="26836000" />
+      <workItem from="1569574937287" duration="27442000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41298000" />
+    <option name="totallyTimeSpent" value="41904000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -2321,8 +2324,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DocGen.ConsoleProject/PdfRendererVisitor.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="98" column="60" selection-start-line="98" selection-start-column="60" selection-end-line="98" selection-end-column="60" />
+        <state relative-caret-position="80">
+          <caret line="83" column="28" lean-forward="true" selection-start-line="83" selection-start-column="28" selection-end-line="83" selection-end-column="28" />
           <folding>
             <marker date="1569602081521" expanded="true" signature="6:714" ph="..." />
             <marker date="1569602081521" expanded="true" signature="730:4320" ph="{...}" />
