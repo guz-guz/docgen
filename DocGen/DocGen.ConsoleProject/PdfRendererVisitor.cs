@@ -22,6 +22,7 @@ using Style = DocumentFormat.OpenXml.Wordprocessing.Style;
 using Table = DocumentFormat.OpenXml.Wordprocessing.Table;
 using TableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
 using TableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
+using TabStop = DocumentFormat.OpenXml.Wordprocessing.TabStop;
 using Underline = MigraDoc.DocumentObjectModel.Underline;
 
 namespace Test
@@ -50,11 +51,7 @@ namespace Test
         public void VisitRun(Run element)
         {
             var runText = element.InnerText;
-
-            if (TryGetParagraphText(runText, out var paragraphText))
-            {
-                _pdfText = _pdfParagraph.AddFormattedText(paragraphText);
-            }
+            _pdfText = _pdfParagraph.AddFormattedText(GetTextFragment(runText));
         }
 
         public void VisitParagraph(Paragraph element)
@@ -130,6 +127,31 @@ namespace Test
                 _pdfText.Font.Name = element.RunFonts.Ascii.Value;
                 _pdfText.Font.Color = element.Color != null? PdfColor.Parse("#" + element.Color.Val): PdfColor.Empty;
             }
+        }
+
+        public bool VisitTabs(Tabs element)
+        {
+            foreach (TabStop tab in element)
+            {
+                if (tab.Val.Value == TabStopValues.Center)
+                {
+                    _pdfParagraph.Format.AddTabStop(GetPdfUnitLength(tab.Position), TabAlignment.Center);
+                }
+                else if (tab.Val.Value == TabStopValues.Left)
+                {
+                    _pdfParagraph.Format.AddTabStop(GetPdfUnitLength(tab.Position), TabAlignment.Left);
+                }
+                else if (tab.Val.Value == TabStopValues.Right)
+                {
+                    _pdfParagraph.Format.AddTabStop(GetPdfUnitLength(tab.Position), TabAlignment.Right);
+                }
+            }
+            return false;
+        }
+        
+        public void VisitTabSymbol()
+        {
+            _pdfParagraph.AddTab();
         }
 
         public void VisitSection(SectionProperties element)

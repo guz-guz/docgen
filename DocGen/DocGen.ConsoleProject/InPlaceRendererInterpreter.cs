@@ -13,18 +13,20 @@ namespace Test
             _visitor = visitor;
         }
 
-        protected override void VisitElement(InterpreterContext context, OpenXmlElement element)
+        protected override bool VisitElement(InterpreterContext context, OpenXmlElement element)
         {
             switch (element.XmlQualifiedName.ToString())
             {
                 case Constants.RunXmlName:
                     _visitor.VisitRun((Run)element);
-                    return;
+                    break;
                 
                 case Constants.TableRowXmlName: 
                     _visitor.VisitTableRow((TableRow)element);
-                    return;
+                    break;
             }
+
+            return true;
         }
     }
 }

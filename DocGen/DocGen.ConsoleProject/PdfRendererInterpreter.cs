@@ -17,7 +17,7 @@ namespace Test
             _visitor = visitor;
         }
 
-        protected override void VisitElement(InterpreterContext context, OpenXmlElement element)
+        protected override bool VisitElement(InterpreterContext context, OpenXmlElement element)
         {
             switch (element.LocalName)
             {
@@ -50,9 +50,17 @@ namespace Test
                     {
                         _visitor.VisitRunProperties(runProperties);
                     }
-
+                    break;
+                
+                case Constants.TabsXmlName:
+                    return _visitor.VisitTabs((Tabs) element);
+                
+                case Constants.TabXmlName:
+                    _visitor.VisitTabSymbol();
                     break;
             }
+
+            return true;
         }
     }
 }

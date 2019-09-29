@@ -11,14 +11,18 @@ namespace Test
             _context = context;
         }
         
-        protected abstract void VisitElement(InterpreterContext context, OpenXmlElement element);
+        protected abstract bool VisitElement(InterpreterContext context, OpenXmlElement element);
 
         public void Interpret(OpenXmlElement rootElement)
         {
             _context.PushElement(rootElement);
             while (_context.TryPopElement(out var element))
             {
-                VisitElement(_context, element);
+                if (!VisitElement(_context, element))
+                {
+                    continue;
+                }
+                
                 _context.SetVisited(element);
                 _context.PushReversedElements(element.ChildElements);
             }

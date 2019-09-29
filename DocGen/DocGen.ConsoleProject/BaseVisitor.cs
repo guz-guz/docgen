@@ -7,6 +7,10 @@ namespace Test
 {
     public abstract class BaseVisitor
     {
+        private const char FieldStartCharacter = '{';
+        private const char FieldEndCharacter = '}';
+        private const char FieldDelimiter = '.';
+
         private readonly Dictionary<string, ValueProvider> _pathsToValueProviders;
 
         protected readonly InterpreterContext Context;
@@ -27,20 +31,49 @@ namespace Test
         protected abstract void PrepareDynamicRows(TableRow tableRow, string pathPrefix, ValueProvider provider,
             List<object> collection);
 
-        protected bool TryGetParagraphText(string runText, out string text)
+        protected string GetTextFragment(string runText)
         {
-            if (!GetIsField(runText))
+            var isField = false;
+            List<string> chunks = null;
+            var lastChunkStart = 0;
+            var lastChunkEnd = 0;
+            for (var i = 0; i < runText.Length; i++)
             {
-                text = runText;
-                return true;
+                if (runText[i] == FieldStartCharacter)
+                {
+                    isField = true;
+                    lastChunkStart = i;
+                }
+                else if (isField && runText[i] == FieldEndCharacter)
+                {
+                    chunks = chunks ?? new List<string>();
+                    chunks.Add(runText.Substring(lastChunkEnd, lastChunkStart - lastChunkEnd));
+                    var fieldText = runText.Substring(lastChunkStart + 1, i - lastChunkStart - 1);
+                    chunks.Add(GetFieldValue(fieldText));
+                    lastChunkEnd = i + 1;
+                    isField = false;
+                }
+                else if (isField && !char.IsLetterOrDigit(runText[i]) && runText[i] != FieldDelimiter)
+                {
+                    isField = false;
+                }
             }
 
-            var fieldPath = runText.Trim('{', '}');
-            var pathPrefix = GetFieldPrefix(fieldPath);
-            if (_pathsToValueProviders.TryGetValue(fieldPath, out var valueProvider))
+            if (chunks == null)
             {
-                text = Convert.ToString(valueProvider.GetValue(fieldPath));
-                return true;
+                return runText;
+            }
+            
+            chunks.Add(runText.Substring(lastChunkEnd, runText.Length - lastChunkEnd));
+            return string.Concat(chunks);
+        }
+
+        private string GetFieldValue(string fieldPath)
+        {
+            var pathPrefix = GetFieldPrefix(fieldPath);
+            if (_pathsToValueProviders.TryGetValue(pathPrefix ?? string.Empty, out var valueProvider))
+            {
+                return Convert.ToString(valueProvider.GetValue(fieldPath));
             }
 
             var provider = _pathsToValueProviders.OrderByDescending(p => p.Key.Length)
@@ -50,9 +83,8 @@ namespace Test
                              ?? throw new InvalidOperationException($"Value at path {fieldPath} is not a collection");
             var tableRow = Context.ReturnToParent<TableRow>();
             PrepareDynamicRows(tableRow, pathPrefix, provider, collection);
-            text = null;
 
-            return false;
+            return fieldPath;
         }
 
         private string GetFieldPrefix(string path)

@@ -13,6 +13,8 @@ namespace Test
         void VisitSection(SectionProperties element);
         void VisitParagraph(Paragraph element);
         void VisitRunProperties(RunProperties element);
+        bool VisitTabs(Tabs element);
+        void VisitTabSymbol();
         void VisitTable(Table table);
         void VisitTableCell(TableCell tableCell);
         void VisitHeaderReference(HeaderReference headerReference);

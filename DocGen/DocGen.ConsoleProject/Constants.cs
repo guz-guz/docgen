@@ -6,6 +6,8 @@ namespace Test
         public const string ParagraphXmlName = "p";
         public const string TableRowXmlName = "tabRw";
         public const string RunPropertiesXmlName = "rPr";
+        public const string TabsXmlName = "tabs";
+        public const string TabXmlName = "tab";
         public const string SectionXmlProperties = "sectPr";
         public const string HeaderReferenceElement = "headerReference";
         public const string FooterReferenceElement = "footerReference";

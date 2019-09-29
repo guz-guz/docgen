@@ -8,11 +8,24 @@ using Style = DocumentFormat.OpenXml.Wordprocessing.Style;
 
 namespace Test
 {
+    class TestModel
+    {
+        public string DimaA { get; set; }
+        public string DimaB { get; set; }
+        public string DimaC { get; set; }
+    }
+    
     public class Program
     {
         public static void Main()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var testModel = new TestModel
+            {
+                DimaA = "Hello by a",
+                DimaB = "Hello _and_ a",
+                DimaC = "Hello to YOU"
+            };
             using (var inputDocument = WordprocessingDocument.Open("Simplest.docx", false))
             {
                 var documentContext = new PdfDocumentContext
@@ -22,7 +35,7 @@ namespace Test
                 };
                 SetStyles(documentContext, inputDocument.MainDocumentPart);
                 SetHeaderFooterDocuments(documentContext, inputDocument.MainDocumentPart);
-                var mainVisitor = InterpretDocument(inputDocument.MainDocumentPart, documentContext);
+                var mainVisitor = InterpretDocument(inputDocument.MainDocumentPart, documentContext, testModel);
                 File.WriteAllBytes("result.pdf", mainVisitor.ToPdf());
             }
         }
@@ -58,10 +71,11 @@ namespace Test
             return buffer;
         }
         
-        private static PdfRendererVisitor InterpretDocument(OpenXmlPart openXmlPart, PdfDocumentContext documentContext)
+        private static PdfRendererVisitor InterpretDocument(OpenXmlPart openXmlPart, PdfDocumentContext documentContext,
+            object model = null)
         {
             var interpreterContext = new InterpreterContext();
-            var visitor = new PdfRendererVisitor(interpreterContext, documentContext);
+            var visitor = new PdfRendererVisitor(interpreterContext, documentContext, model);
             var pdfInterpreter = new PdfRendererInterpreter(interpreterContext, visitor);
             documentContext.Images = GetImages(openXmlPart);
             pdfInterpreter.Interpret(openXmlPart.RootElement);
