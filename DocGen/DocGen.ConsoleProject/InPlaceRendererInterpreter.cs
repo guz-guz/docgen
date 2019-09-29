@@ -3,20 +3,26 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Test
 {
-    class InPlaceInterpreter: BaseInterpreter 
+    class InPlaceRendererInterpreter: BaseInterpreter 
     {
-        public ITemplateVisitor TemplateVisitor { get; set; }
-        
+        private readonly ITemplateVisitor _visitor;
+
+        public InPlaceRendererInterpreter(InterpreterContext context, ITemplateVisitor visitor) 
+            : base(context)
+        {
+            _visitor = visitor;
+        }
+
         protected override void VisitElement(InterpreterContext context, OpenXmlElement element)
         {
             switch (element.XmlQualifiedName.ToString())
             {
                 case Constants.RunXmlName:
-                    TemplateVisitor.VisitRun(context, (Run)element);
+                    _visitor.VisitRun((Run)element);
                     return;
                 
                 case Constants.TableRowXmlName: 
-                    TemplateVisitor.VisitTableRow(context, (TableRow)element);
+                    _visitor.VisitTableRow((TableRow)element);
                     return;
             }
         }

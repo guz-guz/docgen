@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Bibliography;
 
 namespace Test
 {
-    class ValueProvider
+    public class ValueProvider
     {
         private readonly Type _modelType;
         private readonly string _prefix;

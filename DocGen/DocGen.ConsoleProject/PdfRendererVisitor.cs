@@ -1,48 +1,149 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Header = DocumentFormat.OpenXml.Wordprocessing.Header;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.Rendering;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using ParagraphProperties = DocumentFormat.OpenXml.Wordprocessing.ParagraphProperties;
 using PdfDocument = MigraDoc.DocumentObjectModel.Document;
 using PdfSection = MigraDoc.DocumentObjectModel.Section;
 using PdfParagraph = MigraDoc.DocumentObjectModel.Paragraph;
 using PdfTable = MigraDoc.DocumentObjectModel.Tables.Table;
 using PdfTableRow = MigraDoc.DocumentObjectModel.Tables.Row;
 using PdfTableCell = MigraDoc.DocumentObjectModel.Tables.Cell;
+using PdfColor = MigraDoc.DocumentObjectModel.Color;
+using PdfText = MigraDoc.DocumentObjectModel.FormattedText;
 using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
+using RunProperties = DocumentFormat.OpenXml.Wordprocessing.RunProperties;
+using Style = DocumentFormat.OpenXml.Wordprocessing.Style;
 using Table = DocumentFormat.OpenXml.Wordprocessing.Table;
+using TableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
+using TableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
+using Underline = MigraDoc.DocumentObjectModel.Underline;
 
 namespace Test
 {
-    public class PdfRendererVisitor : IRendererVisitor
+    public class PdfRendererVisitor : BaseVisitor, IRendererVisitor
     {
-        private readonly Dictionary<string, ValueProvider> _pathsToValueProviders;
-        private readonly Dictionary<Table, ValueProvider> _tablesToDataProviders;
-        private bool _isDynamicTable;
-        private PdfDocument _document;
+        private readonly PdfDocumentContext _documentContext;
+        private readonly PdfDocument _document;
         private PdfSection _pdfSection;
         private PdfTable _pdfTable;
         private PdfTableRow _pdfRow;
         private int _currentCellIndex;
         private PdfTableCell _pdfCell;
         private PdfParagraph _pdfParagraph;
+        private PdfText _pdfText;
 
-        public PdfRendererVisitor()
+        public PdfRendererVisitor(InterpreterContext context, PdfDocumentContext documentContext, object model = null)
+            : base(context, model)
         {
+            _documentContext = documentContext;
             _document = new PdfDocument();
-            _pathsToValueProviders = new Dictionary<string, ValueProvider>();
-            _tablesToDataProviders = new Dictionary<Table, ValueProvider>();
         }
 
-        public void VisitRun(InterpreterContext context, Run element)
+        public PdfDocument Document => _document;
+
+        public void VisitRun(Run element)
         {
             var runText = element.InnerText;
 
-            if (TryGetParagraphText(context, runText, out string paragraphText))
+            if (TryGetParagraphText(runText, out var paragraphText))
             {
-                _pdfParagraph.AddText(paragraphText);
+                _pdfText = _pdfParagraph.AddFormattedText(paragraphText);
             }
+        }
+
+        public void VisitParagraph(Paragraph element)
+        {
+            if (_pdfSection == null)
+            {
+                _pdfSection = _document.AddSection();
+            }
+
+            _pdfParagraph = _pdfCell?.AddParagraph() ?? _pdfSection.AddParagraph();
+            SetParagraphProperties(element.ParagraphProperties);
+        }
+
+        private void SetParagraphProperties(ParagraphProperties paragraphProperties)
+        {
+            if (paragraphProperties == null)
+            {
+                return;
+            }
+            
+            if (paragraphProperties.ParagraphStyleId != null)
+            {
+                SetParagraphByStyles(_documentContext.Styles[paragraphProperties.ParagraphStyleId.Val]);
+            }
+
+            if (paragraphProperties.Indentation != null)
+            {
+                _pdfParagraph.Format.LeftIndent = GetPdfUnitLength(Convert.ToInt32(paragraphProperties.Indentation.Left.Value));
+            }
+        }
+
+        private void SetParagraphByStyles(Style style)
+        {
+            if (style.StyleParagraphProperties.Indentation != null)
+            {
+                _pdfParagraph.Format.LeftIndent = GetPdfUnitLength(Convert.ToInt32(style.StyleParagraphProperties.Indentation.Left.Value));
+            }
+            
+            SetParagraphByRunStyles(style.StyleRunProperties);
+        }
+
+        private void SetParagraphByRunStyles(StyleRunProperties element)
+        {
+            if (element == null)
+            {
+                return;
+            }
+            
+            _pdfParagraph.Format.Font.Bold = element.Bold != null;
+            _pdfParagraph.Format.Font.Italic = element.Italic != null;
+            _pdfParagraph.Format.Font.Underline = element.Underline != null ? Underline.Single : Underline.None;
+            if (element.FontSize != null)
+            {
+                _pdfParagraph.Format.Font.Size = Convert.ToSingle(element.FontSize.Val) / 2;
+                _pdfParagraph.Format.Font.Name = element.RunFonts.Ascii?.Value ?? string.Empty;
+                _pdfParagraph.Format.Font.Color = element.Color != null? PdfColor.Parse("#" + element.Color.Val): PdfColor.Empty;
+            }
+        }
+
+        public void VisitRunProperties(RunProperties element)
+        {
+            if (_pdfParagraph == null)
+            {
+                return;
+            }
+            
+            _pdfText.Font.Bold = element.Bold != null;
+            _pdfText.Font.Italic = element.Italic != null;
+            _pdfText.Font.Underline = element.Underline != null ? Underline.Single : Underline.None;
+            if (element.FontSize != null)
+            {
+                _pdfText.Font.Size = Convert.ToSingle(element.FontSize.Val) / 2;    
+                _pdfText.Font.Name = element.RunFonts.Ascii.Value;
+                _pdfText.Font.Color = element.Color != null? PdfColor.Parse("#" + element.Color.Val): PdfColor.Empty;
+            }
+        }
+
+        public void VisitSection(SectionProperties element)
+        {
+            var pageSize = element.GetFirstChild<PageSize>();
+            _pdfSection.PageSetup.PageWidth = GetPdfUnitLength(pageSize.Width);
+            _pdfSection.PageSetup.PageHeight = GetPdfUnitLength(pageSize.Height);
+            var pageMargin = element.GetFirstChild<PageMargin>();
+            _pdfSection.PageSetup.LeftMargin = GetPdfUnitLength(pageMargin.Left);
+            _pdfSection.PageSetup.RightMargin = GetPdfUnitLength(pageMargin.Right);
+            _pdfSection.PageSetup.TopMargin = _documentContext.TopMargin ?? GetPdfUnitLength(pageMargin.Top);
+            _pdfSection.PageSetup.BottomMargin = _documentContext.BottomMargin ?? GetPdfUnitLength(pageMargin.Bottom);
+            _pdfSection.PageSetup.HeaderDistance = GetPdfUnitLength(pageMargin.Header);
+            _pdfSection.PageSetup.FooterDistance = GetPdfUnitLength(pageMargin.Footer);
         }
 
         public void VisitTable(Table table)
@@ -50,12 +151,15 @@ namespace Test
             _pdfTable = _pdfCell == null
                 ? _pdfSection.AddTable()
                 : _pdfCell.Elements.AddTable();
-            //var properties = table.GetFirstChild<TableProperties>();
         }
 
-        public void VisitTableRow(InterpreterContext context, TableRow element)
+        public void VisitTableRow(TableRow element)
         {
             _pdfRow = _pdfTable.AddRow();
+            if (TableRowsToDataProviders.TryGetValue(element, out var tableRowValueProvider))
+            {
+                tableRowValueProvider.MoveNext();
+            }
         }
 
         public void VisitTableCell(TableCell tableCell)
@@ -63,57 +167,78 @@ namespace Test
             _pdfCell = _pdfRow.Cells[_currentCellIndex++];
         }
 
-        public void VisitParagraph(Paragraph element)
+        public void VisitHeaderReference(HeaderReference headerReference)
         {
-            _pdfParagraph = _pdfCell?.AddParagraph() ?? _pdfSection.AddParagraph();
+            SetHeadersFooters(_pdfSection.Headers, headerReference);
         }
 
-        public void VisitHeader(Header header)
+        public void VisitFooterReference(FooterReference headerReference)
         {
+            SetHeadersFooters(_pdfSection.Footers, headerReference);
         }
 
-        public void VisitFooter(Header header)
+        public void VisitBlip(Blip element)
         {
+            var image = _documentContext.Images[element.Embed.Value];
+            _pdfParagraph.AddImage($"base64:{Convert.ToBase64String(image)}");
+        }
+
+        public byte[] ToPdf()
+        {
+            var documentRenderer = new PdfDocumentRenderer(true) {Document = _document};
+            documentRenderer.RenderDocument();
+            using (var documentStream = new MemoryStream())
+            {
+                documentRenderer.PdfDocument.Save(documentStream);
+                return documentStream.ToArray();
+            }
+        }
+
+        protected override void PrepareDynamicRows(TableRow tableRow, string pathPrefix, ValueProvider provider,
+            List<object> collection)
+        {
+            Context.PushElements(Enumerable.Repeat(tableRow, collection.Count));
+            TableRowsToDataProviders.Add(tableRow,
+                new TableRowValueProvider(collection.GetType().GetGenericArguments().First(), pathPrefix, collection)
+            );
+        }
+
+        private int GetPdfUnitLength(float openXmlUnitLength)
+        {
+            return (int) (openXmlUnitLength * 72f / 1440f);
+        }
+
+        private void SetHeadersFooters(HeadersFooters headersFooters, HeaderFooterReferenceType referenceType)
+        {
+            switch (referenceType.Type.Value)
+            {
+                case HeaderFooterValues.Default:
+                    CopyChildElements(headersFooters.Primary.Elements, referenceType.Id.Value);
+                    break;
+
+                case HeaderFooterValues.First:
+                    CopyChildElements(headersFooters.FirstPage.Elements, referenceType.Id.Value);
+                    break;
+                
+                case HeaderFooterValues.Even:
+                    CopyChildElements(headersFooters.EvenPage.Elements, referenceType.Id.Value);
+                    break;
+            }
         }
         
-        private bool TryGetParagraphText(InterpreterContext context, string runText, out string text)
+        private void CopyChildElements(DocumentElements copyTo, string referenceId)
         {
-            if (!GetIsField(runText))
+            var relatedDocumentElements = _documentContext.RelatedDocuments[referenceId]
+                .Sections
+                .OfType<PdfSection>()
+                .First()
+                .Clone()    
+                .Elements;
+
+            foreach (DocumentObject element in relatedDocumentElements)
             {
-                text = runText;
-                return true;
+                copyTo.Add(element.Clone() as DocumentObject);
             }
-
-            var fieldPath = runText.Trim('[', ']');
-            var pathPrefix = GetFieldPrefix(fieldPath);
-            if (_pathsToValueProviders.TryGetValue(fieldPath, out var valueProvider))
-            {
-                text = Convert.ToString(valueProvider.GetValue(fieldPath));
-                return true;
-            }
-            
-            var provider = _pathsToValueProviders.OrderByDescending(p => p.Key.Length).Where(p => pathPrefix.StartsWith(p.Key)).Select(p => p.Value).FirstOrDefault()
-                ?? throw new KeyNotFoundException($"Cannot find value provider for path {fieldPath}");
-            var collection = (provider.GetValue(pathPrefix) as IEnumerable<object>)?.ToList()
-                ?? throw new InvalidOperationException($"Value at path {fieldPath} is not a collection");
-            var tableRow = context.ReturnToParent<TableRow>();
-            context.PushElements(Enumerable.Repeat(tableRow, collection.Count));
-            text = null;
-            
-            return false;
-        }
-
-        private string GetFieldPrefix(string path)
-        {
-            var delimiterIndex = path.LastIndexOf('.');
-            return delimiterIndex < 0
-                ? path.Substring(0, delimiterIndex)
-                : null;
-        }
-
-        private bool GetIsField(string text)
-        {
-            return text.StartsWith('[') && text.EndsWith(']');
         }
     }
 }

@@ -9,14 +9,14 @@ namespace Test
         private Stack<OpenXmlElement> _elements = new Stack<OpenXmlElement>();
         private readonly Dictionary<int, OpenXmlElement> _distancesToElements = new Dictionary<int, OpenXmlElement>();
 
-        public OpenXmlElement ReturnToParent<T>() where T : OpenXmlElement
+        public T ReturnToParent<T>() where T : OpenXmlElement
         {
             var (key, value) = _distancesToElements
                 .Where(p => p.Value is T)
                 .OrderBy(p => p.Key)
                 .First();
             _elements = new Stack<OpenXmlElement>(_elements.Take(key));
-            return value;
+            return value as T;
         }
 
         public void PushElement(OpenXmlElement element)
@@ -27,6 +27,14 @@ namespace Test
         public void PushElements(IEnumerable<OpenXmlElement> elements)
         {
             foreach (var childElement in elements)
+            {
+                _elements.Push(childElement);
+            }
+        }
+        
+        public void PushReversedElements(IEnumerable<OpenXmlElement> elements)
+        {
+            foreach (var childElement in elements.Reverse())
             {
                 _elements.Push(childElement);
             }

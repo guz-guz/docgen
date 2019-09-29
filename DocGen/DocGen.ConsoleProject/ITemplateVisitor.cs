@@ -2,9 +2,9 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Test
 {
-    interface ITemplateVisitor
+    public interface ITemplateVisitor
     {
-        void VisitRun(InterpreterContext context, Run element);
-        void VisitTableRow(InterpreterContext context, TableRow element);
+        void VisitRun(Run element);
+        void VisitTableRow(TableRow element);
     }
 }

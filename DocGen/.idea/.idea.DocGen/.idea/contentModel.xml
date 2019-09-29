@@ -7,10 +7,11 @@
     <e p="D:\DEV\LE\DocGen\DocGen" t="IncludeFlat">
       <e p="DocGen.ConsoleProject" t="IncludeRecursive">
         <e p="BaseInterpreter.cs" t="Include" />
+        <e p="BaseVisitor.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Constants.cs" t="Include" />
         <e p="DocGen.ConsoleProject.csproj" t="IncludeRecursive" />
-        <e p="InPlaceInterpreter.cs" t="Include" />
+        <e p="InPlaceRendererInterpreter.cs" t="Include" />
         <e p="InterpreterContext.cs" t="Include" />
         <e p="IRendererVisitor.cs" t="Include" />
         <e p="ITemplateVisitor.cs" t="Include" />
@@ -22,9 +23,14 @@
             </e>
           </e>
         </e>
+        <e p="PdfDocumentContext.cs" t="Include" />
+        <e p="PdfRendererInterpreter.cs" t="Include" />
         <e p="PdfRendererVisitor.cs" t="Include" />
         <e p="Program.cs" t="Include" />
         <e p="report.pdf" t="Include" />
+        <e p="result.pdf" t="Include" />
+        <e p="Simplest.docx" t="Include" />
+        <e p="TableRowValueProvider.cs" t="Include" />
         <e p="Template.docx" t="Include" />
         <e p="ValueProvider.cs" t="Include" />
       </e>
